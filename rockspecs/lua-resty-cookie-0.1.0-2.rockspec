@@ -2,13 +2,13 @@ package = "lua-resty-cookie"
 version = "0.1.0-2"
 
 source = {
-  url = "https://github.com/cloudflare/lua-resty-cookie.git",
+  url = "git+https://github.com/utix/lua-resty-cookie",
   tag = "v0.1.0",
 }
 
 description = {
   summary = "Lua library for HTTP cookie manipulations for OpenResty/ngx_lua",
-  homepage = "https://github.com/cloudflare/lua-resty-cookie",
+  homepage = "https://github.com/utix/lua-resty-cookie",
   license = "BSD",
 }
 
