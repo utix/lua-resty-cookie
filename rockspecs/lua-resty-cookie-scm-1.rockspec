@@ -2,12 +2,12 @@ package = "lua-resty-cookie"
 version = "scm-1"
 
 source = {
-  url = "https://github.com/cloudflare/lua-resty-cookie.git",
+  url = "https://github.com/utix/lua-resty-cookie.git",
 }
 
 description = {
   summary = "Lua library for HTTP cookie manipulations for OpenResty/ngx_lua",
-  homepage = "https://github.com/cloudflare/lua-resty-cookie",
+  homepage = "https://github.com/utix/lua-resty-cookie",
   license = "BSD",
 }
 
