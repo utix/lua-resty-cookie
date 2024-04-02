@@ -192,7 +192,7 @@ SID => foo
                 key = "Name", value = "Bob", path = "/",
                 domain = "example.com", secure = true, httponly = true,
                 expires = "Wed, 09 Jun 2021 10:18:14 GMT", max_age = 50,
-                samesite = "Strict", extension = "a4334aebaec"
+                samesite = "Strict", partitioned = true, extension = "a4334aebaec"
             })
             if not ok then
                 ngx.log(ngx.ERR, err)
@@ -206,7 +206,7 @@ GET /t
 --- no_error_log
 [error]
 --- response_headers
-Set-Cookie: Name=Bob; Expires=Wed, 09 Jun 2021 10:18:14 GMT; Max-Age=50; Domain=example.com; Path=/; Secure; HttpOnly; SameSite=Strict; a4334aebaec
+Set-Cookie: Name=Bob; Expires=Wed, 09 Jun 2021 10:18:14 GMT; Max-Age=50; Domain=example.com; Path=/; Secure; HttpOnly; SameSite=Strict; Partitioned; a4334aebaec
 --- response_body
 Set cookie
 
