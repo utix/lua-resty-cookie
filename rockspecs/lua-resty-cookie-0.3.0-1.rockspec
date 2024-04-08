@@ -1,9 +1,9 @@
 package = "lua-resty-cookie"
-version = "0.2.0-1"
+version = "0.3.0-1"
 
 source = {
   url = "git+https://github.com/utix/lua-resty-cookie",
-  tag = "v0.2.0",
+  tag = "v0.3.0",
 }
 
 description = {
