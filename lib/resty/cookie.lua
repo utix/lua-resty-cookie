@@ -164,6 +164,7 @@ local function bake(cookie)
         .. (cookie.secure and "; Secure" or "")
         .. (cookie.httponly and "; HttpOnly" or "")
         .. (cookie.samesite and "; SameSite=" .. cookie.samesite or "")
+        .. (cookie.partitioned and "; Partitioned" or "")
         .. (cookie.extension and "; " .. cookie.extension or "")
     return str
 end

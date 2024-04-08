@@ -5,7 +5,7 @@ use Cwd qw(cwd);
 
 repeat_each(2);
 
-plan tests => repeat_each() * (blocks() * 3 + 7);
+plan tests => repeat_each() * (blocks() * 3 + 9);
 
 my $pwd = cwd();
 
@@ -192,7 +192,7 @@ SID => foo
                 key = "Name", value = "Bob", path = "/",
                 domain = "example.com", secure = true, httponly = true,
                 expires = "Wed, 09 Jun 2021 10:18:14 GMT", max_age = 50,
-                samesite = "Strict", extension = "a4334aebaec"
+                samesite = "Strict", partitioned = true, extension = "a4334aebaec"
             })
             if not ok then
                 ngx.log(ngx.ERR, err)
@@ -206,7 +206,7 @@ GET /t
 --- no_error_log
 [error]
 --- response_headers
-Set-Cookie: Name=Bob; Expires=Wed, 09 Jun 2021 10:18:14 GMT; Max-Age=50; Domain=example.com; Path=/; Secure; HttpOnly; SameSite=Strict; a4334aebaec
+Set-Cookie: Name=Bob; Expires=Wed, 09 Jun 2021 10:18:14 GMT; Max-Age=50; Domain=example.com; Path=/; Secure; HttpOnly; SameSite=Strict; Partitioned; a4334aebaec
 --- response_body
 Set cookie
 
@@ -462,3 +462,75 @@ GET /t
 [error]
 --- response_body
 Cookie string: Name=Bob; Expires=Wed, 09 Jun 2021 10:18:14 GMT; Max-Age=50; Domain=example.com; Path=/; Secure; HttpOnly; SameSite=None; a4334aebaec
+
+
+
+=== TEST 14: set partioned to false
+--- http_config eval: $::HttpConfig
+--- config
+    location /t {
+        content_by_lua '
+            local ck = require "resty.cookie"
+            local cookie, err = ck:new()
+            if not cookie then
+                ngx.log(ngx.ERR, err)
+                return
+            end
+
+            local ok, err = cookie:set({
+                key = "Name", value = "Bob", path = "/",
+                domain = "example.com", secure = true, httponly = true,
+                expires = "Wed, 09 Jun 2021 10:18:14 GMT", max_age = 50,
+                samesite = "Strict", partitioned = false, extension = "a4334aebaec"
+            })
+            if not ok then
+                ngx.log(ngx.ERR, err)
+                return
+            end
+            ngx.say("Set cookie")
+        ';
+    }
+--- request
+GET /t
+--- no_error_log
+[error]
+--- response_headers
+Set-Cookie: Name=Bob; Expires=Wed, 09 Jun 2021 10:18:14 GMT; Max-Age=50; Domain=example.com; Path=/; Secure; HttpOnly; SameSite=Strict; a4334aebaec
+--- response_body
+Set cookie
+
+
+
+=== TEST 15: partioned not set
+--- http_config eval: $::HttpConfig
+--- config
+    location /t {
+        content_by_lua '
+            local ck = require "resty.cookie"
+            local cookie, err = ck:new()
+            if not cookie then
+                ngx.log(ngx.ERR, err)
+                return
+            end
+
+            local ok, err = cookie:set({
+                key = "Name", value = "Bob", path = "/",
+                domain = "example.com", secure = true, httponly = true,
+                expires = "Wed, 09 Jun 2021 10:18:14 GMT", max_age = 50,
+                samesite = "Strict", extension = "a4334aebaec"
+            })
+            if not ok then
+                ngx.log(ngx.ERR, err)
+                return
+            end
+            ngx.say("Set cookie")
+        ';
+    }
+--- request
+GET /t
+--- no_error_log
+[error]
+--- response_headers
+Set-Cookie: Name=Bob; Expires=Wed, 09 Jun 2021 10:18:14 GMT; Max-Age=50; Domain=example.com; Path=/; Secure; HttpOnly; SameSite=Strict; a4334aebaec
+--- response_body
+Set cookie

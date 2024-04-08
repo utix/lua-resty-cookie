@@ -64,7 +64,7 @@ Synopsis
                     key = "Name", value = "Bob", path = "/",
                     domain = "example.com", secure = true, httponly = true,
                     expires = "Wed, 09 Jun 2021 10:18:14 GMT", max_age = 50,
-                    samesite = "Strict", extension = "a4334aebaec"
+                    samesite = "Strict", partitioned = true, extension = "a4334aebaec"
                 })
                 if not ok then
                     ngx.log(ngx.ERR, err)
@@ -133,12 +133,13 @@ syntax: ok, err = cookie_obj:set({
     expires = "Wed, 09 Jun 2021 10:18:14 GMT",
     max_age = 50,
     samesite = "Strict",
+    partitioned = true,
     extension = "a4334aebaec"
 })
 ```
 
 Set a cookie to client. This will add a new 'Set-Cookie' response header. `key` and `value` are required, all other fields are optional.
-If the same cookie (whole cookie string, e.g. "Name=Bob; Expires=Wed, 09 Jun 2021 10:18:14 GMT; Max-Age=50; Domain=example.com; Path=/; Secure; HttpOnly;") has already been setted, new cookie will be ignored.
+If the same cookie (whole cookie string, e.g. "Name=Bob; Expires=Wed, 09 Jun 2021 10:18:14 GMT; Max-Age=50; Domain=example.com; Path=/; Secure; HttpOnly; Partitioned;") has already been set, new cookie will be ignored.
 
 [Back to TOC](#table-of-contents)
 
