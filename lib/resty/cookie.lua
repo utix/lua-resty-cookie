@@ -72,7 +72,10 @@ local function get_cookie_table(text_cookie)
                     or byte(text_cookie, j) == HTAB
             then
                 value = sub(text_cookie, i, j - 1)
-                cookie_table[key] = value
+                if not cookie_table[key] then
+                    cookie_table[key] = {}
+                end
+                table.insert(cookie_table[key], value)
 
                 key, value = nil, nil
                 state = EXPECT_SP
@@ -91,7 +94,10 @@ local function get_cookie_table(text_cookie)
     end
 
     if key ~= nil and value == nil then
-        cookie_table[key] = sub(text_cookie, i)
+        if not cookie_table[key] then
+            cookie_table[key] = {}
+        end
+        table.insert(cookie_table[key], sub(text_cookie, i))
     end
 
     return cookie_table
@@ -106,7 +112,7 @@ function _M.new(self)
         { __index = self })
 end
 
-function _M.get(self, key)
+function _M.get_all_for(self, key)
     if not self._cookie then
         return nil, "no cookie found in the current request"
     end
@@ -117,16 +123,37 @@ function _M.get(self, key)
     return self.cookie_table[key]
 end
 
+function _M.get(self, key)
+    if not self._cookie then
+        return nil, "no cookie found in the current request"
+    end
+    if self.cookie_table == nil then
+        self.cookie_table = get_cookie_table(self._cookie)
+    end
+
+    local values = self.cookie_table[key]
+    if values then
+        return values[#values]
+    end
+end
+
 function _M.get_all(self)
     if not self._cookie then
         return nil, "no cookie found in the current request"
     end
 
-    if self.cookie_table == nil then
-        self.cookie_table = get_cookie_table(self._cookie)
+    if self.last_value_cookie_table == nil then
+        if self.cookie_table == nil then
+            self.cookie_table = get_cookie_table(self._cookie)
+        end
+        local last_value_cookie_table = {}
+        for key, values in pairs(self.cookie_table) do
+            last_value_cookie_table[key] = values[#values]
+        end
+        self.last_value_cookie_table = last_value_cookie_table
     end
 
-    return self.cookie_table
+    return self.last_value_cookie_table
 end
 
 function _M.get_cookie_size(self)
