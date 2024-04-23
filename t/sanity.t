@@ -534,3 +534,98 @@ GET /t
 Set-Cookie: Name=Bob; Expires=Wed, 09 Jun 2021 10:18:14 GMT; Max-Age=50; Domain=example.com; Path=/; Secure; HttpOnly; SameSite=Strict; a4334aebaec
 --- response_body
 Set cookie
+
+
+
+=== TEST 16: multiple values with the same key provided
+--- http_config eval: $::HttpConfig
+--- config
+    location /t {
+        content_by_lua '
+            local ck = require "resty.cookie"
+            local cookie, err = ck:new()
+            if not cookie then
+                ngx.log(ngx.ERR, err)
+                return
+            end
+
+            local fields = cookie:get_all_for("lang")
+            for _, value in pairs(fields) do
+                ngx.say("lang", " => ", value)
+            end
+        ';
+    }
+--- request
+GET /t
+--- more_headers
+Cookie: SID=31d4d96e407aad42; lang=en-US; lang=en-GB;
+--- no_error_log
+[error]
+--- response_body
+lang => en-US
+lang => en-GB
+
+
+
+=== TEST 17: last cookie value is returned when multiple values with the same key provided
+--- http_config eval: $::HttpConfig
+--- config
+    location /t {
+        content_by_lua '
+            local ck = require "resty.cookie"
+            local cookie, err = ck:new()
+            if not cookie then
+                ngx.log(ngx.ERR, err)
+                return
+            end
+
+            local field = cookie:get("lang")
+            ngx.say("lang", " => ", field)
+        ';
+    }
+--- request
+GET /t
+--- more_headers
+Cookie: SID=31d4d96e407aad42; lang=en-US; lang=en-GB;
+--- no_error_log
+[error]
+--- response_body
+lang => en-GB
+
+
+
+=== TEST 18: cookie table with last values are returned
+--- http_config eval: $::HttpConfig
+--- config
+    location /t {
+        content_by_lua '
+            local ck = require "resty.cookie"
+            local cookie, err = ck:new()
+            if not cookie then
+                ngx.log(ngx.ERR, err)
+                return
+            end
+
+            local fields = cookie:get_all()
+
+            local keys = {}
+            for key in pairs(fields) do
+                table.insert(keys, key)
+            end
+            table.sort(keys)
+
+            for _, key in ipairs(keys) do
+                ngx.say(key, " => ", fields[key])
+            end
+        ';
+    }
+--- request
+GET /t
+--- more_headers
+Cookie: SID=31d4d96e407aad42; lang=en-US; lang=en-GB;
+--- no_error_log
+[error]
+--- response_body
+SID => 31d4d96e407aad42
+lang => en-GB
+

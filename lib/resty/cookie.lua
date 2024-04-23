@@ -36,7 +36,7 @@ local function get_cookie_table(text_cookie)
     if type(text_cookie) ~= "string" then
         log(ERR, format("expect text_cookie to be \"string\" but found %s",
                 type(text_cookie)))
-        return {}
+        return {}, {}
     end
 
     local EXPECT_KEY    = 1
@@ -52,7 +52,8 @@ local function get_cookie_table(text_cookie)
         end
     end
 
-    local cookie_table  = new_tab(0, n + 1)
+    local cookie_table = new_tab(0, n + 1)
+    local multiple_value_cookie_table  = new_tab(0, n + 1)
 
     local state = EXPECT_SP
     local i = 1
@@ -73,6 +74,10 @@ local function get_cookie_table(text_cookie)
             then
                 value = sub(text_cookie, i, j - 1)
                 cookie_table[key] = value
+                if not multiple_value_cookie_table[key] then
+                    multiple_value_cookie_table[key] = {}
+                end
+                table.insert(multiple_value_cookie_table[key], value)
 
                 key, value = nil, nil
                 state = EXPECT_SP
@@ -92,9 +97,13 @@ local function get_cookie_table(text_cookie)
 
     if key ~= nil and value == nil then
         cookie_table[key] = sub(text_cookie, i)
+        if not multiple_value_cookie_table[key] then
+            multiple_value_cookie_table[key] = {}
+        end
+        table.insert(multiple_value_cookie_table[key], sub(text_cookie, i))
     end
 
-    return cookie_table
+    return cookie_table, multiple_value_cookie_table
 end
 
 function _M.new(self)
@@ -127,6 +136,17 @@ function _M.get_all(self)
     end
 
     return self.cookie_table
+end
+
+function _M.get_all_for(self, key)
+    if not self._cookie then
+        return nil, "no cookie found in the current request"
+    end
+    if self.multiple_value_cookie_table == nil then
+        _, self.multiple_value_cookie_table = get_cookie_table(self._cookie)
+    end
+
+    return self.multiple_value_cookie_table[key]
 end
 
 function _M.get_cookie_size(self)
