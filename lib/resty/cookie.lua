@@ -112,17 +112,6 @@ function _M.new(self)
         { __index = self })
 end
 
-function _M.get_all_for(self, key)
-    if not self._cookie then
-        return nil, "no cookie found in the current request"
-    end
-    if self.cookie_table == nil then
-        self.cookie_table = get_cookie_table(self._cookie)
-    end
-
-    return self.cookie_table[key]
-end
-
 function _M.get(self, key)
     if not self._cookie then
         return nil, "no cookie found in the current request"
@@ -156,6 +145,17 @@ function _M.get_all(self)
     end
 
     return self.last_value_cookie_table
+end
+
+function _M.get_all_for(self, key)
+    if not self._cookie then
+        return nil, "no cookie found in the current request"
+    end
+    if self.cookie_table == nil then
+        self.cookie_table = get_cookie_table(self._cookie)
+    end
+
+    return self.cookie_table[key]
 end
 
 function _M.get_cookie_size(self)
