@@ -13,6 +13,7 @@ Table of Contents
     * [new](#new)
     * [get](#get)
     * [get_all](#get_all)
+    * [get_all_for](#get_all_for)
     * [get_cookie_size](#get_cookie_size)
     * [set](#set)
     * [get_cookie_string](#get_cookie_string)
@@ -110,6 +111,14 @@ get_all
 `syntax: fields, err = cookie_obj:get_all()`
 
 Get all client cookie key/value pairs in a lua table. On error, returns `nil` and an error message.
+
+[Back to TOC](#table-of-contents)
+
+get_all_for
+-------
+`syntax: cookie_values, err = cookie_obj:get_all_for(cookie_name)`
+
+Get a list of client cookie values. On error, returns `nil` and an error message.
 
 [Back to TOC](#table-of-contents)
 
