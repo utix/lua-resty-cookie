@@ -143,7 +143,8 @@ function _M.get_all_for(self, key)
         return nil, "no cookie found in the current request"
     end
     if self.multiple_value_cookie_table == nil then
-        _, self.multiple_value_cookie_table = get_cookie_table(self._cookie)
+        local _, multiple_value_cookie_table = get_cookie_table(self._cookie)
+        self.multiple_value_cookie_table = multiple_value_cookie_table
     end
 
     return self.multiple_value_cookie_table[key]
